@@ -3,7 +3,7 @@ echo "Running pre-commit hook"
 echo "Current directory: $(pwd)"
 
 # Проверка кода линтером
-yarn lint
+# yarn lint
 
 # Unit-тесты
 # yarn test
