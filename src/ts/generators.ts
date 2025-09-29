@@ -1,3 +1,6 @@
+// src/ts/generators.ts
+
+import Character from "./Character";
 /**
  * Формирует экземпляр персонажа из массива allowedTypes со
  * случайным уровнем от 1 до maxLevel
@@ -8,7 +11,10 @@
  * возвращает новый экземпляр класса персонажа
  *
  */
-export function* characterGenerator(allowedTypes, maxLevel) {
+export function* characterGenerator(
+  allowedTypes: Array<new () => Character>,
+  maxLevel: number,
+) {
   // TODO: write logic here
 }
 
@@ -19,6 +25,10 @@ export function* characterGenerator(allowedTypes, maxLevel) {
  * @param characterCount количество персонажей, которое нужно сформировать
  * @returns экземпляр Team, хранящий экземпляры персонажей. Количество персонажей в команде - characterCount
  * */
-export function generateTeam(allowedTypes, maxLevel, characterCount) {
+export function generateTeam(
+  allowedTypes: Array<new () => Character>,
+  maxLevel: number,
+  characterCount: number,
+) {
   // TODO: write logic here
 }

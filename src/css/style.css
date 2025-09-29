@@ -1,82 +1,195 @@
 :root {
+  /* Базовые переменные для размеров */
   --cell-size: 64px;
+  --board-gap: 2px;
+  
+  /* Переменные для цветов */
+  --color-dark-bg: #000;
+  --color-light-text: #fff;
+  --color-primary-button-bg: #f8f9fa;
+  --color-primary-button-text: #212529;
+  --color-hover: #e9ecef; /* Слегка изменен для лучшего контраста */
+  --color-selection-yellow: #ff0;
+  --color-selection-green: #0f0;
+  --color-selection-red: #f00;
+  --color-health-high: #0f0;
+  --color-health-normal: #ff0;
+  --color-health-critical: #f00;
 }
 
+/* --- Сброс и Базовые стили --- */
 html, body {
   height: 100%;
   margin: 0;
 }
 
 body {
-  background: #000;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--color-dark-bg);
+  color: var(--color-light-text);
   font-size: 16px;
+  /* Для центрирования контента */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* --- Заголовок --- */
+h1 {
+  font-size: 24px;
+  margin: 30px 0 20px;
+  text-align: center;
+}
+
+h1 a {
+  color: var(--color-light-text);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+h1 a:hover {
+  color: var(--color-hover);
+}
+
+/* --- Контейнер приложения --- */
+.container {
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 30px 20px;
+  box-sizing: border-box;
+}
+
+/* --- Кнопка (Button) | Осовремененный стиль --- */
 .btn {
-  display: inline-block;
-  font-weight: 400;
-  color: #212529;
-  background-color: #f8f9fa;
+  cursor: pointer;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 600;
+  color: var(--color-primary-button-text);
+  background-color: var(--color-primary-button-bg);
   text-align: center;
   vertical-align: middle;
-  padding: .375rem .75rem;
+  padding: .5rem 1.2rem;
   font-size: 1rem;
   line-height: 1.5;
-  border-radius: .25rem;
-  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  border-radius: .3rem;
+  /* Улучшенная тень и переход */
+  transition: all .2s cubic-bezier(0.4, 0, 0.2, 1); 
   border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
 }
 
+.btn:hover {
+    background-color: var(--color-hover);
+    /* Эффект приподнятия на наведении */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); 
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    /* Эффект нажатия */
+    transform: translateY(1px); 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+}
+
+/* --- Элементы управления --- */
 .controls {
   text-align: center;
   margin: 50px 0;
 }
 
+/* --- Контейнер доски --- */
 .board-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  perspective: 1000px;
 }
 
+/* --- Доска (Grid) --- */
 .board {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  grid-column-gap: 2px;
-  grid-row-gap: 2px;
+  grid-template-columns: repeat(8, var(--cell-size));
+  gap: var(--board-gap);
+  /* Свечение на черном фоне */
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.15); 
+  border-radius: 6px; 
+  transform: translateZ(0);
 }
 
+/* --- Ячейка | Стили наведения --- */
 .cell {
   position: relative;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.1s ease-out; /* Плавное масштабирование */
 }
 
+.cell:hover {
+    transform: scale(1.05); /* Легкое увеличение */
+    z-index: 10;
+}
+
+/* Визуальный эффект при наведении на ячейку (светлая рамка) */
+.cell::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Добавляем тонкую световую рамку при наведении */
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5) inset; 
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.cell:hover::after {
+    opacity: 1;
+}
+
+/* --- Стили выделения (Псевдоэлемент) --- */
 .cell.selected::before {
   content: '';
   display: block;
-  border: 4px;
-  border-radius: 32px;
+  border: 4px solid;
+  border-radius: 50%;
   box-sizing: border-box;
   width: var(--cell-size);
   height: var(--cell-size);
-  opacity: 0.9;
+  opacity: 0.8; 
   position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  transition: all 0.15s ease-out;
 }
 
 .cell.selected-yellow::before {
-  border-color: #ff0;
+  border-color: var(--color-selection-yellow);
   border-style: solid;
 }
 
 .cell.selected-green::before {
-  border-color: #0f0;
-  border-style: dashed;
+  border-color: var(--color-selection-green);
+  border-style: solid;
 }
 
 .cell.selected-red::before {
-  border-color: #f00;
+  border-color: var(--color-selection-red);
   border-style: dashed;
 }
 
+/* --- Ссылки на плитки карты (Map Tiles URLs) --- */
 .board.prairie {
   --map-tile-top-left-url: url('../img/prairie/map-tile-top-left.png');
   --map-tile-top-url: url('../img/prairie/map-tile-top.png');
@@ -125,130 +238,99 @@ body {
   --map-tile-center-url: url('../img/mountain/map-tile-center.png');
 }
 
+/* --- Стиль плиток карты (Map Tiles) --- */
 .map-tile {
   width: var(--cell-size);
   height: var(--cell-size);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
-.map-tile-top-left {
-  background: var(--map-tile-top-left-url);
-}
+.map-tile-top-left { background-image: var(--map-tile-top-left-url); }
+.map-tile-top { background-image: var(--map-tile-top-url); }
+.map-tile-top-right { background-image: var(--map-tile-top-right-url); }
+.map-tile-bottom-left { background-image: var(--map-tile-bottom-left-url); }
+.map-tile-bottom { background-image: var(--map-tile-bottom-url); }
+.map-tile-bottom-right { background-image: var(--map-tile-bottom-right-url); }
+.map-tile-left { background-image: var(--map-tile-left-url); }
+.map-tile-right { background-image: var(--map-tile-right-url); }
+.map-tile-center { background-image: var(--map-tile-center-url); }
 
-.map-tile-top {
-  background: var(--map-tile-top-url);
-}
-
-.map-tile-top-right {
-  background: var(--map-tile-top-right-url);
-}
-
-.map-tile-bottom-left {
-  background: var(--map-tile-bottom-left-url);
-}
-
-.map-tile-bottom {
-  background: var(--map-tile-bottom-url);
-}
-
-.map-tile-bottom-right {
-  background: var(--map-tile-bottom-right-url);
-}
-
-.map-tile-left {
-  background: var(--map-tile-left-url);
-}
-
-.map-tile-right {
-  background: var(--map-tile-right-url);
-}
-
-.map-tile-center {
-  background: var(--map-tile-center-url);
-}
-
+/* --- Ссылки на персонажей (Character URLs) --- */
 .character {
   width: var(--cell-size);
   height: var(--cell-size);
   position: absolute;
   z-index: 99;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
-.character.generic {
-  background: url('../img/characters/generic.png');
-}
+.character.generic { background: url('../img/characters/generic.png'); }
+.character.bowman { background: url('../img/characters/bowman.png'); }
+.character.daemon { background: url('../img/characters/daemon.png'); }
+.character.magician { background: url('../img/characters/magician.png'); }
+.character.swordsman { background: url('../img/characters/swordsman.png'); }
+.character.undead { background: url('../img/characters/undead.png'); }
+.character.vampire { background: url('../img/characters/vampire.png'); }
+.character.zombie { background: url('../img/characters/zombie.png'); }
 
-.character.bowman {
-  background: url('../img/characters/bowman.png');
-}
 
-.character.daemon {
-  background: url('../img/characters/daemon.png');
-}
-
-.character.magician {
-  background: url('../img/characters/magician.png');
-}
-
-.character.swordsman {
-  background: url('../img/characters/swordsman.png');
-}
-
-.character.undead {
-  background: url('../img/characters/undead.png');
-}
-
-.character.vampire {
-  background: url('../img/characters/vampire.png');
-}
-
-.character.zombie {
-  background: url('../img/characters/zombie.png');
-}
-
+/* --- Уровень здоровья --- */
 .health-level {
-  top: 2px;
-  left: 7px;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
   position: absolute;
   width: 50px;
   height: 4px;
-  background: #000;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 2px;
+  overflow: hidden;
+  z-index: 100;
 }
 
 .health-level-indicator {
   height: 4px;
+  transition: width 0.3s ease-out;
 }
 
 .health-level-indicator-high {
-  background: #0f0;
+  background: var(--color-health-high);
 }
 
 .health-level-indicator-normal {
-  background: #ff0;
+  background: var(--color-health-normal);
 }
 
 .health-level-indicator-critical {
-  background: #f00;
+  background: var(--color-health-critical);
 }
 
+/* --- Урон (Damage Animation) --- */
 .damage {
   position: absolute;
   width: var(--cell-size);
   text-align: center;
   z-index: 999;
-  color: #f00;
-  font-weight: bold;
-  animation: 500ms fade ease-out;
+  color: var(--color-selection-red);
+  text-shadow: 0 0 3px var(--color-dark-bg);
+  font-weight: 700;
+  animation: 500ms fade ease-out forwards;
 }
 
 @keyframes fade {
   from {
     opacity: 0;
-    top: calc(var(--cell-size) * 0.5);
+    top: calc(var(--cell-size) * 0.75);
     font-size: 1rem;
+    transform: scale(0.8);
   }
   to {
-    opacity: 1;
-    top: -20px;
-    font-size: 1.5rem;
+    opacity: 0.9;
+    top: -15px;
+    font-size: 1.6rem;
+    transform: scale(1);
   }
 }

@@ -1,4 +1,6 @@
 // index.ts
 
 import "./css/style.css";
-import "./js/app";
+import "./ts/app";
+
+console.log("index.ts");

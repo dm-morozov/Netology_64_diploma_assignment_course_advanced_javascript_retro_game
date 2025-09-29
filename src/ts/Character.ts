@@ -13,11 +13,17 @@
  * vampire
  */
 export default class Character {
-  constructor(level, type = "generic") {
+  protected level: number;
+  protected attack: number;
+  protected defence: number;
+  public health: number;
+  public type: string;
+
+  constructor(level: number, type: string = "generic") {
     this.level = level;
     this.attack = 0;
     this.defence = 0;
-    this.health = 50;
+    this.health = 100;
     this.type = type;
     // TODO: выбросите исключение, если кто-то использует "new Character()"
   }

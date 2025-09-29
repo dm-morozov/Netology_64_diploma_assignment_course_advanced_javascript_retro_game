@@ -17,7 +17,9 @@
     "noImplicitAny": true,
     "sourceMap": true,
 
-    "lib": ["DOM", "ES2020", "webworker"] 
+    "lib": ["DOM", "ES2020", "webworker"], 
+    "allowJs": true, // Разрешаем импортировать .js файлы
+    "checkJs": false // Отключаем проверку типов в .js файлах
   },
   
   // Какие файлы обрабатывать.
