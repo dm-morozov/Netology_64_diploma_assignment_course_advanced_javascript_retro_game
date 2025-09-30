@@ -20,11 +20,28 @@ export default class Character {
   public type: string;
 
   constructor(level: number, type: string = 'generic') {
+    // TODO: выбросите исключение, если кто-то использует "new Character()"
+    if (new.target === Character) {
+      throw new Error('Невозможно напрямую создать экземпляр класса Character');
+    }
     this.level = level;
     this.attack = 0;
     this.defence = 0;
     this.health = 100;
     this.type = type;
-    // TODO: выбросите исключение, если кто-то использует "new Character()"
+  }
+
+  // Геттеры для protected свойств,
+  // чтобы можно было получить значения в тестах
+  getLevel(): number {
+    return this.level;
+  }
+
+  getAttack(): number {
+    return this.attack;
+  }
+
+  getDefence(): number {
+    return this.defence;
   }
 }

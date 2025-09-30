@@ -1,6 +1,7 @@
 // src/ts/generators.ts
 
 import Character from './Character';
+import Team from './Team';
 /**
  * Формирует экземпляр персонажа из массива allowedTypes со
  * случайным уровнем от 1 до maxLevel
@@ -12,10 +13,17 @@ import Character from './Character';
  *
  */
 export function* characterGenerator(
-  _allowedTypes: Array<new () => Character>,
-  _maxLevel: number
-) {
-  // TODO: write logic here
+  allowedTypes: Array<new (level: number) => Character>,
+  maxLevel: number
+): Generator<Character> {
+  // TODO: напишите логику здесь
+  // так как это генератор, то мы будем использовать yield
+  while (true) {
+    const typeIndex = Math.floor(Math.random() * allowedTypes.length);
+    const level = Math.floor(Math.random() * maxLevel) + 1;
+    const CharacterClass = allowedTypes[typeIndex];
+    yield new CharacterClass(level);
+  }
 }
 
 /**
@@ -26,9 +34,20 @@ export function* characterGenerator(
  * @returns экземпляр Team, хранящий экземпляры персонажей. Количество персонажей в команде - characterCount
  * */
 export function generateTeam(
-  _allowedTypes: Array<new () => Character>,
-  _maxLevel: number,
-  _characterCount: number
-) {
-  // TODO: write logic here
+  allowedTypes: Array<new (level: number) => Character>,
+  maxLevel: number,
+  characterCount: number
+): Team {
+  // TODO: напишите логику здесь
+
+  // Создаем новую команду
+  const team = new Team();
+  // Создаем гениратор
+  const generator = characterGenerator(allowedTypes, maxLevel);
+  // В цикле берём characterCount персонажей из генератора и добавляем в команду
+  for (let i = 0; i < characterCount; i++) {
+    team.addCharacter(generator.next().value);
+  }
+  // Возвращаем команду (экземпляр Team)
+  return team;
 }

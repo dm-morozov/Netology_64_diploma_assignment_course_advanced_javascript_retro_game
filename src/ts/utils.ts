@@ -1,7 +1,5 @@
 // src/ts/utils.ts
 
-console.log('utils');
-
 /**
  * @todo
  * @param index - индекс поля
