@@ -1,6 +1,6 @@
 # Дипломное задание к курсу «Продвинутый JavaScript». Retro Game
 
-### Статус проекта
+## Статус проекта
 
 [![Build status](https://ci.appveyor.com/api/projects/status/t17ggq6elbpqyb6l?svg=true)](https://ci.appveyor.com/project/dm-morozov/netology-64-diploma-assignment-course-advanced-jav)
 ![CI](https://github.com/dm-morozov/Netology_64_diploma_assignment_course_advanced_javascript_retro_game/actions/workflows/web.yaml/badge.svg)
