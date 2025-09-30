@@ -1,6 +1,6 @@
 // src/ts/utils.ts
 
-console.log("utils");
+console.log('utils');
 
 /**
  * @todo
@@ -36,27 +36,27 @@ export function calcTileType(index: number, boardSize: number): string {
   const col = index % boardSize;
   // console.log(col); // для отладки
   // Углы
-  if (row === 0 && col === 0) return "top-left";
-  if (row === 0 && col === boardSize - 1) return "top-right";
-  if (row === boardSize - 1 && col === boardSize - 1) return "bottom-right";
-  if (row === boardSize - 1 && col === 0) return "bottom-left";
+  if (row === 0 && col === 0) return 'top-left';
+  if (row === 0 && col === boardSize - 1) return 'top-right';
+  if (row === boardSize - 1 && col === boardSize - 1) return 'bottom-right';
+  if (row === boardSize - 1 && col === 0) return 'bottom-left';
   // Края
-  if (row === 0) return "top";
-  if (row === boardSize - 1) return "bottom";
-  if (col === 0) return "left";
-  if (col === boardSize - 1) return "right";
+  if (row === 0) return 'top';
+  if (row === boardSize - 1) return 'bottom';
+  if (col === 0) return 'left';
+  if (col === boardSize - 1) return 'right';
   // Центр
-  return "center";
+  return 'center';
 }
 
 export function calcHealthLevel(health: number): string {
   if (health < 15) {
-    return "critical";
+    return 'critical';
   }
 
   if (health < 50) {
-    return "normal";
+    return 'normal';
   }
 
-  return "high";
+  return 'high';
 }

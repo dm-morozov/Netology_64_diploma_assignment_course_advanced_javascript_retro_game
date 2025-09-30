@@ -19,7 +19,7 @@ export default class Character {
   public health: number;
   public type: string;
 
-  constructor(level: number, type: string = "generic") {
+  constructor(level: number, type: string = 'generic') {
     this.level = level;
     this.attack = 0;
     this.defence = 0;

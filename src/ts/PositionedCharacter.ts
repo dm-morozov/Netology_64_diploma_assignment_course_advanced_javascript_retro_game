@@ -1,6 +1,6 @@
 // src/ts/PositionedCharacter.ts
 
-import Character from "./Character";
+import Character from './Character';
 
 export default class PositionedCharacter {
   public character: Character;
@@ -9,12 +9,12 @@ export default class PositionedCharacter {
   constructor(character: Character, position: number) {
     if (!(character instanceof Character)) {
       throw new Error(
-        "символ должен быть экземпляром Character или его дочерними элементами",
+        'символ должен быть экземпляром Character или его дочерними элементами'
       );
     }
 
-    if (typeof position !== "number") {
-      throw new Error("позиция должна быть числом");
+    if (typeof position !== 'number') {
+      throw new Error('позиция должна быть числом');
     }
 
     this.character = character;

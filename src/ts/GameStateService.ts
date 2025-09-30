@@ -8,14 +8,14 @@ export default class GameStateService {
   }
 
   save(state: object) {
-    this.storage.setItem("state", JSON.stringify(state));
+    this.storage.setItem('state', JSON.stringify(state));
   }
 
   load() {
     try {
-      return JSON.parse(this.storage.getItem("state") || "{}");
+      return JSON.parse(this.storage.getItem('state') || '{}');
     } catch (e) {
-      throw new Error("Invalid state" + e);
+      throw new Error('Invalid state' + e);
     }
   }
 }

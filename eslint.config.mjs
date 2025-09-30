@@ -1,9 +1,9 @@
-// eslint.config.mjs
+// eslint.config.mjs (Финальная, рабочая версия с отключенными правилами)
 
 import pluginJs from '@eslint/js';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import parser from '@typescript-eslint/parser';
-import pluginImport from 'eslint-plugin-import'; // Импортируем плагин import
+import pluginImport from 'eslint-plugin-import';
 import pluginPrettier from 'eslint-plugin-prettier';
 import globals from 'globals';
 
@@ -16,20 +16,14 @@ export default [
       globals: {
         ...globals.node,
         ...globals.es2023,
-        ...globals.jest, // Добавляем Jest-глобали
-        ...globals.browser, // Добавляем браузерные глобали (window, document, и т.д.)
-        ...globals.worker, // Добавляем глобали Web/Service Worker (self, FetchEvent, ExtendableEvent и т.д.)
-
-        // !!! ДОПОЛНИТЕЛЬНОЕ ИСПРАВЛЕНИЕ ДЛЯ NO-UNDEF: !!!
-        'ServiceWorkerGlobalScope': 'readonly',
-        'ExtendableEvent': 'readonly',
-        'FetchEvent': 'readonly',
+        ...globals.jest,
+        ...globals.browser,
       },
     },
     plugins: {
       '@typescript-eslint': tseslint,
-      import: pluginImport, // Добавляем плагин import
-      prettier: pluginPrettier, // добавили Prettier
+      import: pluginImport,
+      prettier: pluginPrettier,
     },
     settings: {
       'import/resolver': {
@@ -41,10 +35,16 @@ export default [
     rules: {
       ...pluginJs.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,
-      ...pluginImport.configs.recommended.rules, // Добавляем рекомендованные правила import
+      ...pluginImport.configs.recommended.rules,
+      
+      // ОТКЛЮЧАЕМ ПРАВИЛА, КОТОРЫЕ КОНФЛИКТУЮТ С PRETTIER
+      // 1. Общее правило quotes (отключаем встроенное правило JS)
+      'quotes': 'off', 
+      // 2. Правило TypeScript quotes (отключаем правило TS)
+      '@typescript-eslint/quotes': 'off', 
+      
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      // 'no-console': 'warn',
       'no-console': 'off',
       'import/extensions': [
         'error',
@@ -55,9 +55,15 @@ export default [
           ts: 'never',
         },
       ],
-      'import/no-unresolved': 'off', // Отключаем проверку на неразрешённые импорты
-      // активируем правила Prettier
-      'prettier/prettier': 'error',
+      'import/no-unresolved': 'off',
+      // Активируем Prettier
+      'prettier/prettier': ['error', {
+        singleQuote: true, // Встраиваем настройку прямо сюда
+        // Если нужно, другие настройки:
+        semi: true,
+        tabWidth: 2,
+        trailingComma: 'es5',
+      }],
     },
   },
 ];
