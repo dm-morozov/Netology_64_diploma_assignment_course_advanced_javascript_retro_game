@@ -1,4 +1,8 @@
-import { calcTileType, calcHealthLevel } from '../../utils';
+import {
+  calcTileType,
+  calcHealthLevel,
+  formatCharacterInfo,
+} from '../../utils';
 
 describe('calcTileType', () => {
   test('должен вернуть "top-left" для индекса 0', () => {
@@ -67,5 +71,27 @@ describe('calcHealthLevel', () => {
   test('должен вернуть "high" при здоровье >= 50', () => {
     expect(calcHealthLevel(50)).toBe('high');
     expect(calcHealthLevel(100)).toBe('high');
+  });
+});
+
+// ---
+
+describe('formatCharacterInfo', () => {
+  test('должен форматировать характеристики персонажа в правильный формат', () => {
+    const level = 1;
+    const attack = 40;
+    const defence = 10;
+    const health = 100;
+    const result = formatCharacterInfo`🎖${level} ⚔${attack} 🛡${defence} ❤${health}`;
+    expect(result).toBe('🎖1 ⚔40 🛡10 ❤100');
+  });
+
+  test('должен корректно обрабатывать нулевые значения', () => {
+    const level = 0;
+    const attack = 0;
+    const defence = 0;
+    const health = 0;
+    const result = formatCharacterInfo`🎖${level} ⚔${attack} 🛡${defence} ❤${health}`;
+    expect(result).toBe('🎖0 ⚔0 🛡0 ❤0');
   });
 });

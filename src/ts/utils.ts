@@ -58,3 +58,22 @@ export function calcHealthLevel(health: number): string {
 
   return 'high';
 }
+
+/**
+ * Форматирует характеристики персонажа в строку для тултипа
+ * @param strings - массив строк из шаблона
+ * @param level - уровень персонажа
+ * @param attack - атака персонажа
+ * @param defence - защита персонажа
+ * @param health - здоровье персонажа
+ * @returns строка в формате "🎖1 ⚔10 🛡40 ❤50"
+ */
+export function formatCharacterInfo(
+  strings: TemplateStringsArray,
+  level: number,
+  attack: number,
+  defence: number,
+  health: number
+): string {
+  return `${strings[0]}${level} ${strings[1].trim()}${attack} ${strings[2].trim()}${defence} ${strings[3].trim()}${health}`;
+}

@@ -9,7 +9,7 @@ export default class PositionedCharacter {
   constructor(character: Character, position: number) {
     if (!(character instanceof Character)) {
       throw new Error(
-        'символ должен быть экземпляром Character или его дочерними элементами'
+        'Первый параметр должен быть экземпляром Character или его дочерними элементами'
       );
     }
 
