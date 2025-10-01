@@ -2,6 +2,7 @@
 
 import Character from './Character';
 import Team from './Team';
+import PositionedCharacter from './PositionedCharacter';
 /**
  * Формирует экземпляр персонажа из массива allowedTypes со
  * случайным уровнем от 1 до maxLevel
@@ -50,4 +51,33 @@ export function generateTeam(
   }
   // Возвращаем команду (экземпляр Team)
   return team;
+}
+
+/**
+ * Размещает команду на указанных позициях
+ * @param team массив персонажей
+ * @param positions массив доступных позиций
+ * @returns массив PositionedCharacter
+ */
+export function generatePositions(
+  team: Character[],
+  positions: number[]
+): PositionedCharacter[] {
+  // сюда собираем результат
+  const positionedTeam: PositionedCharacter[] = [];
+
+  // множество, в котором храним уже занятые позиции,
+  // чтобы не поместить двух персонажей в одну и ту же клетку
+  const usedPositions = new Set<number>();
+
+  for (const character of team) {
+    let pos;
+    do {
+      pos = positions[Math.floor(Math.random() * positions.length)];
+    } while (usedPositions.has(pos));
+    usedPositions.add(pos);
+    positionedTeam.push(new PositionedCharacter(character, pos));
+  }
+
+  return positionedTeam;
 }
