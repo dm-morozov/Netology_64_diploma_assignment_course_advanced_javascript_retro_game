@@ -1,7 +1,12 @@
-import { characterGenerator, generateTeam } from '../../generators';
+import {
+  characterGenerator,
+  generateTeam,
+  generatePositions,
+} from '../../generators';
 import Team from '../../Team';
 import Swordsman from '../../characters/Swordsman';
 import Bowman from '../../characters/Bowman';
+import PositionedCharacter from '../../PositionedCharacter';
 
 describe('generateTeam', () => {
   test('characterGenerator должен генерировать случайных персонажей', () => {
@@ -34,5 +39,22 @@ describe('generateTeam', () => {
         .getCharacters()
         .every((char) => char.getLevel() >= 1 && char.getLevel() <= 2)
     ).toBe(true);
+  });
+});
+
+describe('generatePositions', () => {
+  test('должен размещать персонажей на уникальных позициях', () => {
+    const team = [new Swordsman(1), new Bowman(2)];
+    const positions = [0, 1, 8, 9];
+    const result = generatePositions(team, positions);
+
+    expect(result.length).toBe(2); // количество размещенных персонажей
+    expect(result.every((item) => item instanceof PositionedCharacter)).toBe(
+      true
+    ); // проверка на экземпляр класса PositionedCharacter
+    expect(result.every((item) => positions.includes(item.position))).toBe(
+      true
+    ); // все персонажи расположены только на разрешённых позициях
+    expect(new Set(result.map((item) => item.position)).size).toBe(2); // проверка на уникальность позиций
   });
 });
