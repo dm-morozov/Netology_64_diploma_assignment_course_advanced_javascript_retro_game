@@ -1,3 +1,4 @@
+// src/ts/cursors.ts
 const cursors = {
   auto: 'auto',
   pointer: 'pointer',

@@ -9,7 +9,8 @@ import Daemon from './characters/Daemon';
 import Undead from './characters/Undead';
 import Vampire from './characters/Vampire';
 import { generateTeam, generatePositions } from './generators';
-import { formatCharacterInfo } from './utils';
+import { formatCharacterInfo, calcMoveRange } from './utils';
+import cursors from './cursors';
 
 /**
  * GameController - класс, который отвечает за логику приложения
@@ -99,6 +100,50 @@ export default class GameController {
     // this.gamePlay.redrawPositions([positionedSwordsman]); // Рисуем на поле
   }
 
+  private getMoveRange(character: PositionedCharacter): number {
+    if (
+      character.character instanceof Swordsman ||
+      character.character instanceof Undead
+    ) {
+      return 4;
+    }
+    if (
+      character.character instanceof Bowman ||
+      character.character instanceof Vampire
+    ) {
+      return 2;
+    }
+    if (
+      character.character instanceof Magician ||
+      character.character instanceof Daemon
+    ) {
+      return 1;
+    }
+    return 0; // На случай неизвестного типа
+  }
+
+  private getAttackRange(character: PositionedCharacter): number {
+    if (
+      character.character instanceof Swordsman ||
+      character.character instanceof Undead
+    ) {
+      return 1;
+    }
+    if (
+      character.character instanceof Bowman ||
+      character.character instanceof Vampire
+    ) {
+      return 2;
+    }
+    if (
+      character.character instanceof Magician ||
+      character.character instanceof Daemon
+    ) {
+      return 4;
+    }
+    return 0;
+  }
+
   // Метод, который вызывается,
   // когда игрок кликает по ячейке
   onCellClick(index: number) {
@@ -118,7 +163,7 @@ export default class GameController {
         // Выделяем персонажа
         this.gamePlay.selectCell(index);
         // Меняет курсор на pointer
-        this.gamePlay.setCursor('pointer');
+        this.gamePlay.setCursor(cursors.pointer);
       } else {
         // Если кликнули на врага — показываем ошибку
         GamePlay.showError('Это персонаж противника! Выберите своего.');
@@ -128,7 +173,7 @@ export default class GameController {
         // Если выбран персонаж и кликнули на пустую ячейку
         this.gamePlay.deselectCell(this.selectedCharacter.position);
         this.selectedCharacter = null;
-        this.gamePlay.setCursor('auto');
+        this.gamePlay.setCursor(cursors.auto);
       }
     }
   }
@@ -140,12 +185,55 @@ export default class GameController {
       (p) => p.position === index
     );
     if (character) {
+      // Показываем тултип с характеристиками
       const level = character.character.getLevel();
       const attack = character.character.getAttack();
       const defence = character.character.getDefence();
       const health = character.character.health;
       const message = formatCharacterInfo`🎖${level} ⚔${attack} 🛡${defence} ❤${health}`;
       this.gamePlay.showCellTooltip(message, index);
+
+      // Если персонаж игрока и можно выбрать его
+      if (this.selectedCharacter) {
+        const attackRange = this.getAttackRange(this.selectedCharacter);
+        const allowedAttacks = calcMoveRange(
+          this.selectedCharacter.position,
+          attackRange
+        );
+        if (
+          this.enemyTeam.includes(character) &&
+          allowedAttacks.includes(index)
+        ) {
+          this.gamePlay.selectCell(index, 'red');
+          this.gamePlay.setCursor(cursors.crosshair);
+        } else if (this.playerTeam.includes(character)) {
+          this.gamePlay.setCursor(cursors.pointer);
+        } else {
+          this.gamePlay.setCursor(cursors.notallowed);
+        }
+      } else {
+        if (this.playerTeam.includes(character)) {
+          this.gamePlay.setCursor(cursors.pointer);
+        } else {
+          this.gamePlay.setCursor(cursors.notallowed);
+        }
+      }
+    } else {
+      if (this.selectedCharacter) {
+        const moveRange = this.getMoveRange(this.selectedCharacter);
+        const allowedMoves = calcMoveRange(
+          this.selectedCharacter.position,
+          moveRange
+        );
+        if (allowedMoves.includes(index)) {
+          this.gamePlay.selectCell(index, 'green');
+          this.gamePlay.setCursor(cursors.pointer);
+        } else {
+          this.gamePlay.setCursor(cursors.notallowed);
+        }
+      } else {
+        this.gamePlay.setCursor(cursors.auto);
+      }
     }
   }
 
@@ -153,5 +241,9 @@ export default class GameController {
     // TODO: hide tooltip
     // TODO: убрать tooltip
     this.gamePlay.hideCellTooltip(index);
+    if (!this.selectedCharacter || this.selectedCharacter.position !== index) {
+      this.gamePlay.deselectCell(index);
+    }
+    this.gamePlay.setCursor(cursors.auto);
   }
 }

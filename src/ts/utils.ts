@@ -95,7 +95,13 @@ export function calcMoveRange(position: number, moveRange: number): number[] {
     const targetRow = Math.floor(index / 8); // Строка целевой ячейки
     const targetCol = index % 8; // Столбец целевой ячейки
     // Манхэттенское расстояние
-    const distance = Math.abs(targetRow - row) + Math.abs(targetCol - col);
+    // const distance = Math.abs(targetRow - row) + Math.abs(targetCol - col);
+
+    // Шахматное расстояние
+    const distance = Math.max(
+      Math.abs(targetRow - row),
+      Math.abs(targetCol - col)
+    );
     if (distance <= moveRange && index != position) {
       result.push(index);
     }

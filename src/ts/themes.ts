@@ -1,3 +1,5 @@
+// src/ts/themes.ts
+
 const themes = {
   prairie: 'prairie',
   desert: 'desert',

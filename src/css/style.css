@@ -121,6 +121,7 @@ h1 a:hover {
   box-shadow: 0 0 40px rgba(255, 255, 255, 0.15); 
   border-radius: 6px; 
   transform: translateZ(0);
+  cursor: inherit;
 }
 
 /* --- Ячейка | Стили наведения --- */
@@ -128,7 +129,7 @@ h1 a:hover {
   position: relative;
   width: var(--cell-size);
   height: var(--cell-size);
-  cursor: pointer;
+  cursor: inherit;
   overflow: hidden;
   transition: transform 0.1s ease-out; /* Плавное масштабирование */
 }
@@ -172,6 +173,7 @@ h1 a:hover {
   left: 0;
   pointer-events: none;
   transition: all 0.15s ease-out;
+  z-index: 10;
 }
 
 .cell.selected-yellow::before {
@@ -187,6 +189,7 @@ h1 a:hover {
 .cell.selected-red::before {
   border-color: var(--color-selection-red);
   border-style: dashed;
+  z-index: 10;
 }
 
 /* --- Ссылки на плитки карты (Map Tiles URLs) --- */
