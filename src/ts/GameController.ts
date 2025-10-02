@@ -146,7 +146,7 @@ export default class GameController {
 
   // Метод, который вызывается,
   // когда игрок кликает по ячейке
-  onCellClick(index: number) {
+  async onCellClick(index: number) {
     // console.log('GameController: Cell clicked');
     const clickedCharacter = [...this.playerTeam, ...this.enemyTeam].find(
       (p) => p.position === index
@@ -164,22 +164,64 @@ export default class GameController {
         this.gamePlay.selectCell(index);
         // Меняет курсор на pointer
         this.gamePlay.setCursor(cursors.pointer);
+      } else if (
+        this.selectedCharacter &&
+        this.enemyTeam.includes(clickedCharacter)
+      ) {
+        // Если кликнули на врага и есть выбранный персонаж
+        const attackRange = this.getAttackRange(this.selectedCharacter);
+        const allowedAttacks = calcMoveRange(
+          this.selectedCharacter.position,
+          attackRange
+        );
+        // Доступные клетки для атаки
+        if (allowedAttacks.includes(index)) {
+          // Рассчитываем урон
+          const damage = Math.max(
+            this.selectedCharacter.character.getAttack() -
+              clickedCharacter.character.getDefence(),
+            this.selectedCharacter.character.getAttack() * 0.1
+          );
+          // Наносим урон
+          clickedCharacter.character.health -= damage;
+          // Показываем анимацию урона
+          await this.gamePlay.showDamage(index, damage);
+          // Если враг мёртв - убираем из команды
+          if (clickedCharacter.character.health <= 0) {
+            this.enemyTeam = this.enemyTeam.filter(
+              (enemy) => enemy !== clickedCharacter
+            );
+          }
+          // Сбрасываем выделение
+          this.gamePlay.deselectCell(this.selectedCharacter.position);
+          this.gamePlay.deselectCell(index);
+          this.selectedCharacter = null; // Снимаем выделение
+          this.gamePlay.setCursor(cursors.auto);
+
+          // Перерисовываем поле
+          this.gamePlay.redrawPositions([
+            ...this.playerTeam,
+            ...this.enemyTeam,
+          ]);
+        } else {
+          // Если враг вне радиуса атаки
+          GamePlay.showError('Нельзя атаковать — враг слишком далеко');
+        }
       } else {
-        // Если кликнули на врага — показываем ошибку
-        GamePlay.showError('Это персонаж противника! Выберите своего.');
+        // кликнули на врага, но нет выбранного персонажа
+        GamePlay.showError('Сначала выберите своего персонажа');
       }
     } else {
       if (this.selectedCharacter) {
         // Если выбран персонаж и кликнули на пустую ячейку
         // Проверяем, можно ли туда пойти
 
-        // Дальность хода
-        const moveRange = this.getMoveRange(this.selectedCharacter);
-        // Доступные клетки
+        const moveRange = this.getMoveRange(this.selectedCharacter); // Дальность хода
+
         const allowedMoves = calcMoveRange(
           this.selectedCharacter.position,
           moveRange
-        );
+        ); // Доступные клетки
 
         if (allowedMoves.includes(index)) {
           // Тогда мы перемещаем персонажа

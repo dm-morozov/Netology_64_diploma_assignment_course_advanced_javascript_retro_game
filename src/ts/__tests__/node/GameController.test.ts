@@ -309,7 +309,7 @@ describe('GameController', () => {
       gameController.enemyTeam = [character];
       gameController.onCellClick(10);
       expect(GamePlay.showError).toHaveBeenCalledWith(
-        'Это персонаж противника! Выберите своего.'
+        'Сначала выберите своего персонажа'
       );
       expect(gamePlay.selectCell).not.toHaveBeenCalled();
       expect(gamePlay.setCursor).not.toHaveBeenCalledWith(cursors.pointer);
