@@ -77,3 +77,29 @@ export function formatCharacterInfo(
 ): string {
   return `${strings[0]}${level} ${strings[1].trim()}${attack} ${strings[2].trim()}${defence} ${strings[3].trim()}${health}`;
 }
+
+/**
+ * Вычисляет индексы ячеек, в которые персонаж может переместиться,
+ * исходя из текущей позиции и радиуса движения.
+ * @param position Текущая позиция персонажа (индекс ячейки от 0 до 63).
+ * @param moveRange Радиус движения персонажа (например, 4 для Swordsman).
+ * @returns Массив индексов ячеек, куда можно пойти.
+ */
+export function calcMoveRange(position: number, moveRange: number): number[] {
+  const result: number[] = [];
+  const row = Math.floor(position / 8); // Строка текущей позиции
+  const col = position % 8; // Столбец текущей позиции
+
+  // Проверяем все ячейки поля 8x8
+  for (let index = 0; index < 64; index++) {
+    const targetRow = Math.floor(index / 8); // Строка целевой ячейки
+    const targetCol = index % 8; // Столбец целевой ячейки
+    // Манхэттенское расстояние
+    const distance = Math.abs(targetRow - row) + Math.abs(targetCol - col);
+    if (distance <= moveRange && index != position) {
+      result.push(index);
+    }
+  }
+
+  return result;
+}
