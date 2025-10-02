@@ -171,9 +171,31 @@ export default class GameController {
     } else {
       if (this.selectedCharacter) {
         // Если выбран персонаж и кликнули на пустую ячейку
-        this.gamePlay.deselectCell(this.selectedCharacter.position);
-        this.selectedCharacter = null;
-        this.gamePlay.setCursor(cursors.auto);
+        // Проверяем, можно ли туда пойти
+
+        // Дальность хода
+        const moveRange = this.getMoveRange(this.selectedCharacter);
+        // Доступные клетки
+        const allowedMoves = calcMoveRange(
+          this.selectedCharacter.position,
+          moveRange
+        );
+
+        if (allowedMoves.includes(index)) {
+          // Тогда мы перемещаем персонажа
+          const oldPosition = this.selectedCharacter.position; // Запоминаем старую позицию
+          this.selectedCharacter.position = index; // Обновляем позицию
+          this.gamePlay.deselectCell(oldPosition); // Снимаем выделение со старой клетки
+          this.selectedCharacter = null; // Сбрасываем выбор
+          this.gamePlay.setCursor(cursors.auto); // Возвращаем стандартный курсор
+          this.gamePlay.redrawPositions([
+            ...this.playerTeam,
+            ...this.enemyTeam,
+          ]); // Перерисовываем поле
+        } else {
+          // Если нельзя пойти — показываем ошибку
+          GamePlay.showError('Сюда пойти нельзя');
+        }
       }
     }
   }
