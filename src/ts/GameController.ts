@@ -203,6 +203,8 @@ export default class GameController {
             ...this.playerTeam,
             ...this.enemyTeam,
           ]);
+          // Ход противника
+          await this.makeEnemyTurn();
         } else {
           // Если враг вне радиуса атаки
           GamePlay.showError('Нельзя атаковать — враг слишком далеко');
@@ -228,12 +230,14 @@ export default class GameController {
           const oldPosition = this.selectedCharacter.position; // Запоминаем старую позицию
           this.selectedCharacter.position = index; // Обновляем позицию
           this.gamePlay.deselectCell(oldPosition); // Снимаем выделение со старой клетки
+          this.gamePlay.deselectCell(index); // Снимаем выделение с новой клетки
           this.selectedCharacter = null; // Сбрасываем выбор
-          this.gamePlay.setCursor(cursors.auto); // Возвращаем стандартный курсор
           this.gamePlay.redrawPositions([
             ...this.playerTeam,
             ...this.enemyTeam,
           ]); // Перерисовываем поле
+          // Ход противника
+          await this.makeEnemyTurn();
         } else {
           // Если нельзя пойти — показываем ошибку
           GamePlay.showError('Сюда пойти нельзя');
@@ -309,5 +313,124 @@ export default class GameController {
       this.gamePlay.deselectCell(index);
     }
     this.gamePlay.setCursor(cursors.auto);
+  }
+
+  private async makeEnemyTurn() {
+    // Проверяем, есть ли живые враги
+    if (this.enemyTeam.length === 0) {
+      GamePlay.showMessage('Вы победили!');
+      return;
+    }
+
+    // Выбираем всех живых соперников
+    const aliveEnemies = this.enemyTeam.filter(
+      (enemy) => enemy.character.health > 0
+    );
+    if (aliveEnemies.length === 0) {
+      GamePlay.showMessage('Вы победили!');
+      return;
+    }
+    // Выбираем случайного соперника
+    const enemy = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+
+    // Проверяем, есть ли игроки в радиусе атаки
+    const attackRange = this.getAttackRange(enemy);
+    const allowedAttacks = calcMoveRange(enemy.position, attackRange);
+    const attackablePlayers = this.playerTeam.filter(
+      (player) =>
+        allowedAttacks.includes(player.position) && player.character.health > 0
+    );
+    // Если есть игроки в радиусе атаки
+    if (attackablePlayers.length > 0) {
+      // Атака: выбираем случайного игрока
+      const targetPlayer =
+        attackablePlayers[Math.floor(Math.random() * attackablePlayers.length)];
+      // Выполняем атаку
+      const damage = Math.max(
+        enemy.character.getAttack() - targetPlayer.character.getDefence(),
+        enemy.character.getAttack() * 0.1
+      );
+      targetPlayer.character.health -= damage;
+      await this.gamePlay.showDamage(targetPlayer.position, damage);
+      // Проверяем, жив ли игрок
+      if (targetPlayer.character.health <= 0) {
+        this.playerTeam = this.playerTeam.filter(
+          (player) => player !== targetPlayer
+        );
+      }
+    } else {
+      // Перемещение: находим ближайшего игрока
+
+      // Переменная для хранения ссылки на ближайшего игрока
+      let nearestPlayer: PositionedCharacter | null = null;
+
+      // переменная для хранения минимальной найденной дистанции
+      let minDistance = Infinity;
+
+      for (const player of this.playerTeam) {
+        if (player.character.health > 0) {
+          // выбирает максимальное из двух значений,
+          // что соответствует манхэттенскому расстоянию
+          // (движение по клеткам)
+          const distance = Math.max(
+            Math.abs(
+              Math.floor(player.position / 8) - Math.floor(enemy.position / 8)
+            ),
+            Math.abs((player.position % 8) - (enemy.position % 8))
+          );
+          if (distance < minDistance) {
+            minDistance = distance;
+            nearestPlayer = player;
+          }
+        }
+      }
+
+      if (nearestPlayer) {
+        // Находим клетки, куда можно пойти
+        const moveRange = this.getMoveRange(enemy);
+        const allowedMoves = calcMoveRange(enemy.position, moveRange);
+        // Фильтруем только свободные клетки (новая логика)
+        const freeMoves = allowedMoves.filter((move) => this.isCellFree(move));
+        // Фильтруем клетки, которые уменьшают расстояние до игрока
+        let bestMove: number | null = null;
+        let bestDistance = minDistance;
+        for (const move of freeMoves) {
+          // Используем freeMoves вместо allowedMoves
+          const newDistance = Math.max(
+            Math.abs(
+              Math.floor(nearestPlayer.position / 8) - Math.floor(move / 8)
+            ),
+            Math.abs((nearestPlayer.position % 8) - (move % 8))
+          );
+          if (newDistance < bestDistance) {
+            bestDistance = newDistance;
+            bestMove = move;
+          }
+        }
+        if (bestMove !== null) {
+          enemy.position = bestMove;
+        }
+      }
+    }
+
+    // Проверяем, остались ли игроки (после хода AI)
+    if (this.playerTeam.every((player) => player.character.health <= 0)) {
+      // Перерисовываем поле перед сообщением (чтобы игрок увидел смерть)
+      this.gamePlay.redrawPositions([...this.playerTeam, ...this.enemyTeam]);
+      GamePlay.showMessage('Вы проиграли!');
+      return;
+    }
+
+    // Перерисовываем поле (если не было поражения)
+    this.gamePlay.redrawPositions([...this.playerTeam, ...this.enemyTeam]);
+  }
+
+  // метод для проверки свободной клетки
+  private isCellFree(index: number): boolean {
+    // Проверяем, нет ли на клетке кого-то из игроков или врагов
+    const occupied = [...this.playerTeam, ...this.enemyTeam].some(
+      (char) => char.position === index
+    );
+    return !occupied; // true, если свободна
   }
 }

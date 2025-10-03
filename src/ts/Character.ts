@@ -46,4 +46,22 @@ export default class Character {
   getDefence(): number {
     return this.defence;
   }
+
+  levelUp(): void {
+    // Сохраняем текущее здоровье для формулы
+    const currectHealth = this.health;
+    // Увеличиваем уровень
+    this.level += 1;
+    // Обновляем здоровье по нашей формуле
+    this.health = Math.min(this.health + 80, 100);
+    // Обновляем атаку и защиту по формуле из задания
+    this.attack = Math.max(
+      this.attack,
+      (this.attack * (80 + currectHealth)) / 100
+    );
+    this.defence = Math.max(
+      this.defence,
+      (this.defence * (80 + currectHealth)) / 100
+    );
+  }
 }
