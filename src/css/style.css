@@ -117,8 +117,6 @@ h1 a:hover {
   display: grid;
   grid-template-columns: repeat(8, var(--cell-size));
   gap: var(--board-gap);
-  /* Свечение на черном фоне */
-  box-shadow: 0 0 40px rgba(255, 255, 255, 0.15); 
   border-radius: 6px; 
   transform: translateZ(0);
   cursor: inherit;
@@ -131,7 +129,8 @@ h1 a:hover {
   height: var(--cell-size);
   cursor: inherit;
   overflow: hidden;
-  transition: transform 0.1s ease-out; /* Плавное масштабирование */
+  background-color: var(--color-dark-bg); 
+  transition: opacity 0.2s ease;
 }
 
 .cell:hover {
@@ -265,19 +264,22 @@ h1 a:hover {
   height: var(--cell-size);
   position: absolute;
   z-index: 99;
+  
+  /* ФИНАЛЬНЫЙ ФИКС: Применяем успешную комбинацию глобально */
   background-size: contain;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: bottom center; 
 }
 
-.character.generic { background: url('../img/characters/generic.png'); }
-.character.bowman { background: url('../img/characters/bowman.png'); }
-.character.daemon { background: url('../img/characters/daemon.png'); }
-.character.magician { background: url('../img/characters/magician.png'); }
-.character.swordsman { background: url('../img/characters/swordsman.png'); }
-.character.undead { background: url('../img/characters/undead.png'); }
-.character.vampire { background: url('../img/characters/vampire.png'); }
-.character.zombie { background: url('../img/characters/zombie.png'); }
+/* ИСПРАВЛЕНИЕ: Используем background-image для сохранения настроек выше */
+.character.generic { background-image: url('../img/characters/generic.png'); }
+.character.bowman { background-image: url('../img/characters/bowman.png'); }
+.character.daemon { background-image: url('../img/characters/daemon.png'); }
+.character.magician { background-image: url('../img/characters/magician.png'); }
+.character.swordsman { background-image: url('../img/characters/swordsman.png'); }
+.character.undead { background-image: url('../img/characters/undead.png'); }
+.character.vampire { background-image: url('../img/characters/vampire.png'); }
+.character.zombie { background-image: url('../img/characters/zombie.png'); }
 
 
 /* --- Уровень здоровья --- */
@@ -339,98 +341,102 @@ h1 a:hover {
 }
 
 /* --- Адаптивные стили для мобильных устройств --- */
+
 @media (max-width: 600px) {
-  /* Уменьшаем размер ячеек и отступов для мобильных экранов */
-  :root {
-    --cell-size: 40px; /* Уменьшаем размер ячеек */
-    --board-gap: 1px;  /* Уменьшаем отступы между ячейками */
-  }
-
-  /* Уменьшаем контейнер и отступы */
-  .container {
-    max-width: 100%;
-    padding: 10px;
-  }
-
-  /* Уменьшаем шрифт заголовка */
-  h1 {
-    font-size: 18px;
-    margin: 15px 0 10px;
-  }
-
-  /* Уменьшаем кнопки и их шрифт */
-  .btn {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
-    line-height: 1.2;
-    /* Отключаем эффект наведения для сенсорных устройств */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .btn:active {
-    transform: translateY(1px);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  }
-
-  /* Уменьшаем отступы для элементов управления */
-  .controls {
-    margin: 20px 0;
-  }
-
-  /* Убираем perspective и уменьшаем тень для доски */
-  .board-container {
-    perspective: none;
-  }
-
-  .board {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-  }
-
-  /* Отключаем эффект масштабирования ячеек на сенсорных устройствах */
-  .cell:hover {
-    transform: none;
-  }
-
-  .cell:hover::after {
-    opacity: 0;
-  }
-
-  /* Уменьшаем размер индикатора здоровья */
-  .health-level {
-    width: 30px;
-    height: 3px;
-  }
-
-  .health-level-indicator {
-    height: 3px;
-  }
-
-  /* Уменьшаем размер текста урона */
-  .damage {
-    width: var(--cell-size);
-    font-size: 0.8rem;
-  }
-
-  /* Уменьшаем размер персонажей, чтобы они помещались в ячейки */
-  .character {
-    width: var(--cell-size);
-    height: var(--cell-size);
-    background-size: contain; /* Гарантируем, что изображение масштабируется пропорционально */
-  }
-
-  @keyframes fade {
-    from {
-      opacity: 0;
-      top: calc(var(--cell-size) * 0.75);
-      font-size: 0.8rem;
-      transform: scale(0.8);
+    :root {
+        /* Уменьшаем размер ячейки для мобильных устройств */
+        --cell-size: 40px; 
+        --board-gap: 1px;
     }
-    to {
-      opacity: 0.9;
-      top: -10px;
-      font-size: 1.2rem;
-      transform: scale(1);
+
+    body {
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
-  }
+
+    /* Уменьшаем размер заголовка */
+    h1 {
+        font-size: 20px;
+        margin: 15px 0 10px;
+    }
+
+    /* Делаем кнопку компактнее и убираем "подъем" на hover/active для тач-устройств */
+    .btn {
+        padding: .4rem 1rem;
+        font-size: 0.9rem;
+        line-height: 1.3;
+        box-shadow: none; 
+        transform: none !important;
+    }
+    
+    .btn:hover {
+        box-shadow: none; 
+        transform: none;
+    }
+    
+    .btn:active {
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Уменьшаем вертикальный отступ для секции управления */
+    .controls {
+        margin: 30px 0;
+    }
+
+    /* Убираем свечение доски и 3D-трансформацию */
+    .board {
+        box-shadow: none;
+        transform: none; 
+    }
+
+    /* Убираем эффект масштабирования ячейки и световую рамку при наведении/касании */
+    .cell:hover {
+        transform: none; 
+        z-index: auto;
+    }
+
+    .cell:hover::after {
+        opacity: 0;
+    }
+
+    /* Корректируем размер индикатора здоровья */
+    .health-level {
+        width: 30px;
+        height: 3px;
+    }
+    
+    .health-level-indicator {
+        height: 3px;
+    }
+
+    /* Корректируем анимацию урона для меньших размеров */
+    .damage {
+        font-size: 1.2rem;
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        top: calc(var(--cell-size) * 0.75);
+        font-size: 0.8rem;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 0.9;
+        top: -10px;
+        font-size: 1.2rem;
+        transform: scale(1);
+      }
+    }
+}
+
+/* Дополнительный медиа-запрос для очень маленьких экранов (ширина < 400px) */
+@media (max-width: 400px) {
+    :root {
+        --cell-size: 36px; 
+    }
+    
+    .container {
+        padding: 10px; 
+    }
 }
