@@ -1,3 +1,4 @@
+// src/ts/__tests__/node/GameController.test.ts
 import GameController from '../../GameController';
 import GamePlay from '../../GamePlay';
 import GameStateService from '../../GameStateService';
@@ -18,7 +19,7 @@ describe('GameController', () => {
   let showErrorSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    // моки методов экземпляра GamePlay
+    // Моки методов экземпляра GamePlay
     gamePlay = {
       addCellEnterListener: jest.fn(),
       addCellLeaveListener: jest.fn(),
@@ -31,16 +32,25 @@ describe('GameController', () => {
       hideCellTooltip: jest.fn(),
       setCursor: jest.fn(),
       showError: jest.fn(),
-      showDamage: jest.fn().mockResolvedValue(undefined), // Добавляем мок для showDamage
+      showDamage: jest.fn().mockResolvedValue(undefined),
+      addNewGameListener: jest.fn(), // Добавляем мок для слушателя NewGame
+      addSaveGameListener: jest.fn(), // Добавляем мок для SaveGame
+      addLoadGameListener: jest.fn(), // Добавляем мок для LoadGame
+      blockGame: jest.fn(),
+      unblockGame: jest.fn(),
     } as unknown as GamePlay;
 
-    // моки для stateService
+    // Моки для stateService, включая storage
     stateService = {
       load: jest.fn(),
       save: jest.fn(),
+      storage: {
+        getItem: jest.fn().mockReturnValue(null), // По умолчанию нет сохранённого 'GameScore'
+        setItem: jest.fn(), // Мок для setItem
+      },
     } as unknown as GameStateService;
 
-    // подменяем статический метод showError класса GamePlay на шпион
+    // Подменяем статический метод showError класса GamePlay на шпион
     showErrorSpy = jest
       .spyOn(GamePlay, 'showError')
       .mockImplementation(() => {});
@@ -50,18 +60,21 @@ describe('GameController', () => {
   });
 
   afterEach(() => {
-    // восстанавливаем оригинал и чистим все мок-функции
+    // Восстанавливаем оригинал и чистим все мок-функции
     showErrorSpy.mockRestore();
     jest.clearAllMocks();
   });
 
   test('должен инициализировать игру и добавлять слушатели событий', () => {
-    // drawUi вызывается со строковой темой
     expect(gamePlay.drawUi).toHaveBeenCalledWith(expect.any(String));
     expect(gamePlay.addCellEnterListener).toHaveBeenCalled();
     expect(gamePlay.addCellLeaveListener).toHaveBeenCalled();
     expect(gamePlay.addCellClickListener).toHaveBeenCalled();
+    expect(gamePlay.addNewGameListener).toHaveBeenCalled(); // Проверяем новый слушатель
+    expect(gamePlay.addSaveGameListener).toHaveBeenCalled(); // Проверяем новый слушатель
+    expect(gamePlay.addLoadGameListener).toHaveBeenCalled(); // Проверяем новый слушатель
     expect(gamePlay.redrawPositions).toHaveBeenCalledWith(expect.any(Array));
+    expect(stateService.storage.getItem).toHaveBeenCalledWith('GameScore'); // Проверяем вызов getItem
   });
 
   describe('getMoveRange', () => {

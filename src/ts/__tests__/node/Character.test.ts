@@ -33,12 +33,30 @@ describe('Character', () => {
     const daemon = new Daemon(3); // Уровень 3
     expect(daemon.getLevel()).toBe(3);
     // Базово для Daemon: attack=25, defence=15, health=100
-    // После 1 levelUp: attack = max(25, 25*(80+100)/100)=45
-    // defence = max(15, 15*(80+100)/100)=27, health=100 (уже max)
-    // После 2 levelUp: attack = max(45, 45*(80+100)/100)=81
-    // defence = max(27, 27*(80+100)/100)=48.6
-    expect(daemon.getAttack()).toBeCloseTo(81, 1);
-    expect(daemon.getDefence()).toBeCloseTo(48.6, 1);
+    // В setLevel: за каждый уровень выше 1 увеличиваем attack и defence на *1.15
+    // Для level=3: дважды *1.15
+    // attack: 25 * 1.15 = 28.75, 28.75 * 1.15 ≈ 33.0625 → 33 (округление)
+    // defence: 15 * 1.15 = 17.25, 17.25 * 1.15 ≈ 19.8375 → 20 (округление)
+    expect(daemon.getAttack()).toBe(33); // Точное значение, так как округление предсказуемо
+    expect(daemon.getDefence()).toBe(20); // Точное значение
     expect(daemon.health).toBe(100);
+  });
+
+  test('должен создавать врага на уровне 1 без изменений', () => {
+    const daemon = new Daemon(1);
+    expect(daemon.getAttack()).toBe(25);
+    expect(daemon.getDefence()).toBe(15);
+  });
+
+  test('levelUp не должен усиливать, если health=0', () => {
+    const char = new Swordsman(1);
+    char.health = 0;
+    char.levelUp();
+    expect(char.getAttack()).toBe(40); // Формула даёт меньше, но Math.max берёт текущее
+  });
+
+  test('setLevel должен выбрасывать ошибку для level <1', () => {
+    const daemon = new Daemon(1);
+    expect(() => daemon.setLevel(0)).toThrow('Уровень должен быть >= 1');
   });
 });

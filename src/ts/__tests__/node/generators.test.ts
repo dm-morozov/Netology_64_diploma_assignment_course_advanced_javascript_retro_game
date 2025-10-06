@@ -1,3 +1,4 @@
+// src/ts/__tests__/node/generators.test.ts
 import {
   characterGenerator,
   generateTeam,

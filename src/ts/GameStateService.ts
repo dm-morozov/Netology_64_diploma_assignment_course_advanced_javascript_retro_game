@@ -1,5 +1,4 @@
 // src/ts/GameStateService.ts
-
 export default class GameStateService {
   public storage: Storage;
 
@@ -15,9 +14,13 @@ export default class GameStateService {
     }
   }
 
-  load() {
+  load(): object {
+    const state = this.storage.getItem('state');
+    if (!state) {
+      throw new Error('No saved state'); // Добавляем выброс ошибки
+    }
     try {
-      return JSON.parse(this.storage.getItem('state') || '{}');
+      return JSON.parse(state);
     } catch (e) {
       throw new Error('Invalid state' + e);
     }

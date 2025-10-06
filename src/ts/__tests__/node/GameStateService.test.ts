@@ -1,5 +1,4 @@
-// src/__tests__/GameStateService.test.ts
-
+// src/ts/__tests__/node/GameStateService.test.ts
 import GameStateService from '../../GameStateService';
 
 // Мок для localStorage
