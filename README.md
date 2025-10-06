@@ -99,7 +99,7 @@
    ```bash
    yarn dev
    ```
-   Откройте [http://localhost:8080](http://localhost:8080).
+   Откройте [http://localhost:3000/](http://localhost:3000).
 
 4. **Соберите проект для продакшена**:
    ```bash
