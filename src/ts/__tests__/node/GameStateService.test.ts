@@ -1,105 +1,54 @@
 // src/ts/__tests__/node/GameStateService.test.ts
 import GameStateService from '../../GameStateService';
 
-// Мок для localStorage
-class MockStorage implements Storage {
-  private store: { [key: string]: string } = {};
-
-  getItem(key: string): string | null {
-    return this.store[key] || null;
-  }
-
-  setItem(key: string, value: string): void {
-    this.store[key] = value;
-  }
-
-  clear(): void {
-    this.store = {};
-  }
-
-  removeItem(key: string): void {
-    delete this.store[key];
-  }
-
-  get length(): number {
-    return Object.keys(this.store).length;
-  }
-
-  key(index: number): string | null {
-    return Object.keys(this.store)[index] || null;
-  }
-}
-
-// Тестовые данные
-const testState = {
-  level: 1,
-  maxScore: 100,
-  playerTeamData: [
-    {
-      character: {
-        type: 'swordsman',
-        level: 1,
-        health: 100,
-        attack: 40,
-        defence: 10,
-      },
-      position: 0,
-    },
-  ],
-  enemyTeamData: [
-    {
-      character: {
-        type: 'daemon',
-        level: 1,
-        health: 100,
-        attack: 30,
-        defence: 20,
-      },
-      position: 7,
-    },
-  ],
-};
-
 describe('GameStateService', () => {
-  let storage: MockStorage;
   let service: GameStateService;
+  let mockStorage: Storage;
 
   beforeEach(() => {
-    storage = new MockStorage();
-    service = new GameStateService(storage);
-  });
-
-  afterEach(() => {
-    storage.clear();
+    mockStorage = {
+      getItem: jest.fn(),
+      setItem: jest.fn(),
+      removeItem: jest.fn(),
+      clear: jest.fn(),
+      key: jest.fn(),
+      length: 0,
+    };
+    service = new GameStateService(mockStorage);
   });
 
   describe('save', () => {
-    test('должен успешно сохранять валидное состояние', () => {
-      service.save(testState);
-      expect(storage.getItem('state')).toBe(JSON.stringify(testState));
+    test('должен сохранять состояние в storage', () => {
+      const state = { level: 1, score: 100 };
+      service.save(state);
+      expect(mockStorage.setItem).toHaveBeenCalledWith(
+        'state',
+        JSON.stringify(state)
+      );
     });
 
     test('должен выбрасывать ошибку при невалидном состоянии', () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const invalidState: any = {};
-      invalidState.cycle = invalidState;
-      expect(() => service.save(invalidState)).toThrow('Invalid state');
+      const circularObj: any = {};
+      circularObj.self = circularObj; // Создаём циклическую ссылку
+      expect(() => service.save(circularObj)).toThrow('Invalid state');
     });
   });
 
   describe('load', () => {
-    test('должен успешно загружать сохранённое состояние', () => {
-      storage.setItem('state', JSON.stringify(testState));
-      const loadedState = service.load();
-      expect(loadedState).toEqual(testState);
+    test('должен загружать состояние из storage', () => {
+      const state = { level: 1, score: 100 };
+      (mockStorage.getItem as jest.Mock).mockReturnValue(JSON.stringify(state));
+      expect(service.load()).toEqual(state);
     });
 
-    test('должен выбрасывать ошибку, если нет сохранённого состояния', () => {
-      expect(() => service.load()).toThrow('No saved state');
+    test('должен возвращать пустой объект, если нет сохранённого состояния', () => {
+      (mockStorage.getItem as jest.Mock).mockReturnValue(null);
+      expect(service.load()).toEqual({});
     });
 
     test('должен выбрасывать ошибку при невалидном JSON', () => {
-      storage.setItem('state', '{ invalid json }');
+      (mockStorage.getItem as jest.Mock).mockReturnValue('invalid json');
       expect(() => service.load()).toThrow('Invalid state');
     });
   });
