@@ -337,3 +337,100 @@ h1 a:hover {
     transform: scale(1);
   }
 }
+
+/* --- Адаптивные стили для мобильных устройств --- */
+@media (max-width: 600px) {
+  /* Уменьшаем размер ячеек и отступов для мобильных экранов */
+  :root {
+    --cell-size: 40px; /* Уменьшаем размер ячеек */
+    --board-gap: 1px;  /* Уменьшаем отступы между ячейками */
+  }
+
+  /* Уменьшаем контейнер и отступы */
+  .container {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  /* Уменьшаем шрифт заголовка */
+  h1 {
+    font-size: 18px;
+    margin: 15px 0 10px;
+  }
+
+  /* Уменьшаем кнопки и их шрифт */
+  .btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    /* Отключаем эффект наведения для сенсорных устройств */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Уменьшаем отступы для элементов управления */
+  .controls {
+    margin: 20px 0;
+  }
+
+  /* Убираем perspective и уменьшаем тень для доски */
+  .board-container {
+    perspective: none;
+  }
+
+  .board {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+  }
+
+  /* Отключаем эффект масштабирования ячеек на сенсорных устройствах */
+  .cell:hover {
+    transform: none;
+  }
+
+  .cell:hover::after {
+    opacity: 0;
+  }
+
+  /* Уменьшаем размер индикатора здоровья */
+  .health-level {
+    width: 30px;
+    height: 3px;
+  }
+
+  .health-level-indicator {
+    height: 3px;
+  }
+
+  /* Уменьшаем размер текста урона */
+  .damage {
+    width: var(--cell-size);
+    font-size: 0.8rem;
+  }
+
+  /* Уменьшаем размер персонажей, чтобы они помещались в ячейки */
+  .character {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    background-size: contain; /* Гарантируем, что изображение масштабируется пропорционально */
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+      top: calc(var(--cell-size) * 0.75);
+      font-size: 0.8rem;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 0.9;
+      top: -10px;
+      font-size: 1.2rem;
+      transform: scale(1);
+    }
+  }
+}
