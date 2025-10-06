@@ -1,3 +1,5 @@
+// src/ts/app.ts
+
 import GamePlay from './GamePlay';
 import GameController from './GameController';
 import GameStateService from './GameStateService';

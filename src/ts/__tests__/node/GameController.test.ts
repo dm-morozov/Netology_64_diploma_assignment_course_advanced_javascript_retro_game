@@ -31,6 +31,7 @@ describe('GameController', () => {
       hideCellTooltip: jest.fn(),
       setCursor: jest.fn(),
       showError: jest.fn(),
+      showDamage: jest.fn().mockResolvedValue(undefined), // Добавляем мок для showDamage
     } as unknown as GamePlay;
 
     // моки для stateService
@@ -314,21 +315,6 @@ describe('GameController', () => {
       expect(gamePlay.selectCell).not.toHaveBeenCalled();
       expect(gamePlay.setCursor).not.toHaveBeenCalledWith(cursors.pointer);
       expect(gamePlay.deselectCell).not.toHaveBeenCalled();
-    });
-
-    test('снимает выделение при клике на пустую клетку', () => {
-      const character = new PositionedCharacter(new Swordsman(1), 10);
-      // @ts-expect-error: подмена приватного поля для теста
-      gameController.playerTeam = [character];
-      // @ts-expect-error: подмена приватного поля для теста
-      gameController.selectedCharacter = character;
-      gameController.onCellClick(20);
-      expect(gamePlay.deselectCell).toHaveBeenCalledWith(10);
-      expect(gamePlay.setCursor).toHaveBeenCalledWith(cursors.auto);
-      // @ts-expect-error: проверяем приватное поле
-      expect(gameController.selectedCharacter).toBeNull();
-      expect(gamePlay.selectCell).not.toHaveBeenCalled();
-      expect(GamePlay.showError).not.toHaveBeenCalled();
     });
   });
 

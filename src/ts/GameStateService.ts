@@ -1,14 +1,18 @@
 // src/ts/GameStateService.ts
 
 export default class GameStateService {
-  private storage: Storage;
+  public storage: Storage;
 
   constructor(storage: Storage) {
     this.storage = storage;
   }
 
-  save(state: object) {
-    this.storage.setItem('state', JSON.stringify(state));
+  save(state: object): void {
+    try {
+      this.storage.setItem('state', JSON.stringify(state));
+    } catch (e) {
+      throw new Error('Invalid state' + e);
+    }
   }
 
   load() {
